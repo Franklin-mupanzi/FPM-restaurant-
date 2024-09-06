@@ -1,0 +1,132 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FPM Restaurant</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            color: #333;
+        }
+        .menu {
+            margin-bottom: 20px;
+        }
+        .menu-item {
+            margin: 10px 0;
+        }
+        .form-section {
+            margin-top: 20px;
+            background: #fff;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Bienvenue chez FPM Restaurant</h1>
+    
+    <div class="menu">
+        <h2>Notre Menu</h2>
+        <div class="menu-item">
+            <input type="checkbox" id="shawarma" value="10000"> Shawarma - 10 000 FC
+        </div>
+        <div class="menu-item">
+            <input type="checkbox" id="pain" value="500"> Pain - 500 FC
+        </div>
+        <div class="menu-item">
+            <input type="checkbox" id="pizza" value="20000"> Pizza - 20 000 FC
+        </div>
+        <div class="menu-item">
+            <input type="checkbox" id="hamburger" value="10000"> Hamburger - 10 000 FC
+        </div>
+    </div>
+
+    <div class="form-section">
+        <h2>Voulez-vous une livraison à domicile?</h2>
+        <label>
+            <input type="radio" name="livraison" value="oui"> Oui
+        </label>
+        <label>
+            <input type="radio" name="livraison" value="non"> Non
+        </label>
+
+        <div id="details" class="hidden">
+            <h3>Veuillez entrer vos informations:</h3>
+            <form id="infoForm">
+                <label for="nom">Nom:</label><br>
+                <input type="text" id="nom" name="nom" required><br>
+                <label for="adresse">Adresse:</label><br>
+                <input type="text" id="adresse" name="adresse" required><br>
+                <button type="submit">Créer la facture</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="facture" class="hidden">
+        <h2>Facture</h2>
+        <p id="factureDetails"></p>
+    </div>
+
+    <script>
+        const TVA_RATE = 0.18; // 18%
+
+        document.querySelectorAll('input[name="livraison"]').forEach((elem) => {
+            elem.addEventListener("change", function(event) {
+                const details = document.getElementById("details");
+                if (event.target.value === "oui") {
+                    details.classList.remove("hidden");
+                } else {
+                    details.classList.add("hidden");
+                    document.getElementById("facture").classList.add("hidden");
+                }
+            });
+        });
+
+        document.getElementById("infoForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            
+            const nom = document.getElementById("nom").value;
+            const adresse = document.getElementById("adresse").value;
+
+            const selectedItems = Array.from(document.querySelectorAll('input[type="checkbox"]:checked'));
+            const prices = selectedItems.map(item => parseInt(item.value));
+            const total = prices.reduce((acc, price) => acc + price, 0);
+            const tva = total * TVA_RATE;
+            const totalAvecTVA = total + tva;
+
+            let factureDetails = `Nom: ${nom}<br>Adresse: ${adresse}<br>`;
+            factureDetails += `Produits choisis: ${selectedItems.map(item => item.nextSibling.textContent.trim()).join(", ")}<br>`;
+            factureDetails += `Total: ${total} FC<br>`;
+            factureDetails += `TVA (18%): ${tva.toFixed(2)} FC<br>`;
+            factureDetails += `Total avec TVA: ${totalAvecTVA.toFixed(2)} FC`;
+
+            document.getElementById("factureDetails").innerHTML = factureDetails;
+            document.getElementById("facture").classList.remove("hidden");
+        });
+    </script>
+
+</body>
+</html>
